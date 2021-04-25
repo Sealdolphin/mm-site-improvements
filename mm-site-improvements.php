@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Custom Site Improvements
- * Plugin URI: https://github.com/Sealdolphin/wpplugin-mm-csi
+ * Plugin URI: https://github.com/Sealdolphin/mm-site-improvements
  * Description: HEGY-hez készített külön bővítmény. A Wordpress oldalon egyéni tartalmakat lehet hozzátenni marketing szempontból.
  * Author: Mihalovits Márk
  * Author URI: https://github.com/Sealdolphin
