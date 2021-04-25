@@ -1,0 +1,13 @@
+.mm-csi-main-container {
+    display: grid;
+    grid-template-columns: 75% auto;
+}
+.mm-csi-options-container {
+    display: inline-grid;
+    grid-template-columns: 50% 50%;
+    grid-gap: 5px;
+}
+.mm-csi-input-group {
+    display: inline-grid;
+    grid-template-columns: 25% 25%;
+}

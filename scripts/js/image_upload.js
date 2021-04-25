@@ -1,0 +1,45 @@
+window.onload = () => {
+    let frame;
+    const btnUploadImg = document.getElementById('mm-csi-btn-upload');
+    const imgContainer = document.getElementById('mm-csi-image-container');
+    const imgIdInput = document.getElementById('background_image');
+
+    if(btnUploadImg) {
+        btnUploadImg.onclick = (event) => {
+            event.preventDefault();
+    
+            // If the media frame already exists, reopen it.
+            if ( frame ) {
+                frame.open();
+                return;
+            }
+    
+            // Create a new media frame
+            frame = wp.media({
+                title: 'Válassz egy képet',
+                button: {
+                    text: 'Use this media'
+                },
+                multiple: false
+            });
+    
+            console.log(frame);
+    
+            frame.on("select", () => {
+                // Get media attachment details from the frame state
+                var attachment = frame.state().get('selection').first().toJSON();
+    
+                console.log(attachment.url);
+    
+                // Send the attachment URL to our custom image input field.
+                imgContainer.src = attachment.url;
+    
+                // Send the attachment id to our hidden input
+                imgIdInput.value = attachment.url;
+            });
+    
+            frame.open();
+        }
+    }
+    
+}
