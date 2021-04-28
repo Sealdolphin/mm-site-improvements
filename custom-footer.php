@@ -14,6 +14,12 @@ class Custom_Footer {
      */
     public static $option_name = "mmsi_footer_options";
     /**
+     * Egyes beállítások
+     */
+    private static $bg_img = "BG_IMG";
+    private static $flavor_text = "FLAVOR_TEXT";
+    private static $img_margin = "IMG_MARGIN";
+    /**
      * Az alapbeállítás értéke
      */
     private static $default_settings = null;
@@ -23,9 +29,9 @@ class Custom_Footer {
     public static function default_settings() {
         if(self::$default_settings == null) {
             self::$default_settings = array(
-                'background_image' => plugin_dir_url(__FILE__) . "assets/media/hegyek-honlap.png",
-                'flavor_text' => "Some flavor text",
-                'margin' => new Margin(-15, 0, 0, 0, Margin::PERCENTAGE)
+                self::$bg_img => plugin_dir_url(__FILE__) . "assets/media/hegyek-honlap.png",
+                self::$flavor_text => "",
+                self::$img_margin => new Margin(-15, 0, 0, 0, Margin::PERCENTAGE)
             );
         }
         return self::$default_settings;
@@ -65,13 +71,13 @@ class Custom_Footer {
      */
     function apply_customisation() {
         $opts = get_option( self::$option_name );
-        $img_path = $opts["background_image"];
-        $margin = $opts["margin"];
+        $img_path = $opts[self::$bg_img];
+        $margin = $opts[self::$img_margin];
 
         ?>
         <div>
             <img src=<?php _e($img_path) ?> alt="hegyek" style="<?php _e($margin->get_margin_css()) ?>"/>
-            <p style="text-align:right"><?php _e(esc_attr($opts["flavor_text"])) ?></p>
+            <p style="text-align:right"><?php _e(esc_attr($opts[self::$flavor_text])) ?></p>
         </div>
         <?php
     }
@@ -91,7 +97,7 @@ class Custom_Footer {
         );
         //Lábléc beállítás: háttérkép
         add_settings_field(
-            "background_image",
+            self::$bg_img,
             "Set Background image",
             array($this, "upload_image"),
             Custom_Site_Improvements_Plugin::$settings_page,
@@ -99,7 +105,7 @@ class Custom_Footer {
         );
         //Lábléc beállítás: aláírás (flavor text)
         add_settings_field(
-            "flavor_text",
+            self::$flavor_text,
             "Set Flavor Text",
             array($this, "change_text"),
             Custom_Site_Improvements_Plugin::$settings_page,
@@ -118,13 +124,13 @@ class Custom_Footer {
      * Ez a háttérkép beállításához szükséges input mezők kirajzolása
      */
     public function upload_image() {
-        $val = self::getSettingOrDefault("background_image");
+        $val = self::getSettingOrDefault(self::$bg_img);
         
         ?>
         <div>
             <img id="mm-csi-image-container" src="<?php _e(esc_attr($val)) ?>" alt="background" width="100%" height="200px" style="border: solid black 1px">
-            <input type="hidden" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name) ?>[background_image]" id="background_image">
-            <button id="mm-csi-btn-upload" class="button-primary"><?php _e("Change Picture") ?></button>
+            <input type="text" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name . "[" . self::$bg_img . "]") ?>" id=<?php _e(self::$bg_img) ?>>
+            <button id="mm-csi-btn-upload" class="button-primary"><?php _e(__("Kép cseréje")) ?></button>
         </div>
         <?php
     }
@@ -132,11 +138,11 @@ class Custom_Footer {
      * Ez az aláírás beállításához szükséges input mezők kirajzolása
      */
     public function change_text() {
-        $val = self::getSettingOrDefault("flavor_text");
+        $val = self::getSettingOrDefault(self::$flavor_text);
 
         ?>
         <div>
-        <input type="text" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name) ?>[flavor_text]">
+        <input type="text" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name . "[" . self::$flavor_text . "]") ?>">
         </div>
         <?php
     }
@@ -144,7 +150,7 @@ class Custom_Footer {
      * Ez a margó beállításához szükséges input mezők kirajzolása
      */
     public function change_margin() {
-        $margin =  self::getSettingOrDefault("margin");
+        $margin =  self::getSettingOrDefault(self::$img_margin);
 
         ?>
         <div class="mm-csi-main-container">
@@ -176,19 +182,20 @@ class Custom_Footer {
      * A lábléchez tartozó beállítások szanitációja (tisztítása)
      */
     public function sanitize_footer_settings($opts) {
-        $clean_opts = array(
-            'background_image' => $opts["background_image"],
-            'flavor_text' => sanitize_text_field($opts["flavor_text"]),
-            'margin' => Margin::sanitize(
-                new Margin(
-                    intval($opts["margin-top"]),
-                    intval($opts["margin-right"]),
-                    intval($opts["margin-bottom"]),
-                    intval($opts["margin-left"]),
-                    intval($opts["margin-unit"])
-                )
-            )
-        );
+        $clean_opts = array_map("sanitize_text_field", $opts);
+        $clean_opts[self::$bg_img] = $opts[self::$bg_img];
+            // self::$bg_img => $opts[self::$bg_img],
+            // self::$flavor_text => sanitize_text_field($opts[self::$flavor_text]),
+            // self::$img_margin => Margin::sanitize(
+            //     new Margin(
+            //         intval($opts["margin-top"]),
+            //         intval($opts["margin-right"]),
+            //         intval($opts["margin-bottom"]),
+            //         intval($opts["margin-left"]),
+            //         intval($opts["margin-unit"])
+            //     )
+            // )
+        
 
         return $clean_opts;
     }
