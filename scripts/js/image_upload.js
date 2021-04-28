@@ -2,9 +2,7 @@ window.onload = () => {
     let frame;
     const btnUploadImg = document.getElementById('mm-csi-btn-upload');
     const imgContainer = document.getElementById('mm-csi-image-container');
-    const imgIdInput = document.querySelector('input[type="text"]#BG_IMG');
-
-    console.log(imgIdInput);
+    const imgIdInput = document.querySelector('input[type="hidden"]#BG_IMG');
 
     if(btnUploadImg) {
         btnUploadImg.onclick = (event) => {

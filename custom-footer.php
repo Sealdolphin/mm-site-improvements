@@ -19,6 +19,7 @@ class Custom_Footer {
     private static $bg_img = "BG_IMG";
     private static $flavor_text = "FLAVOR_TEXT";
     private static $img_margin = "IMG_MARGIN";
+    private static $txt_margin = "TXT_MARGIN";
     /**
      * Az alapbeállítás értéke
      */
@@ -31,7 +32,8 @@ class Custom_Footer {
             self::$default_settings = array(
                 self::$bg_img => plugin_dir_url(__FILE__) . "assets/media/hegyek-honlap.png",
                 self::$flavor_text => "",
-                self::$img_margin => new Margin(-15, 0, 0, 0, Margin::PERCENTAGE)
+                self::$img_margin => new Margin(-15, 0, 0, 0, Margin::PERCENTAGE),
+                self::$txt_margin => new Margin(0, 0, 0, 0, Margin::PIXELS)
             );
         }
         return self::$default_settings;
@@ -103,6 +105,15 @@ class Custom_Footer {
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
         );
+        //Lábléc beállítás: kép margó
+        add_settings_field(
+            self::$img_margin,
+            "Set Margin",
+            array($this, "change_margin"),
+            Custom_Site_Improvements_Plugin::$settings_page,
+            $section_id,
+            self::$img_margin
+        );
         //Lábléc beállítás: aláírás (flavor text)
         add_settings_field(
             self::$flavor_text,
@@ -113,11 +124,12 @@ class Custom_Footer {
         );
         //Lábléc beállítás: margó
         add_settings_field(
-            "footer_margin",
-            "Set Margin",
+            self::$txt_margin,
+            "Set txt Margin",
             array($this, "change_margin"),
             Custom_Site_Improvements_Plugin::$settings_page,
-            $section_id
+            $section_id,
+            self::$txt_margin
         );
     }
     /**
@@ -129,7 +141,7 @@ class Custom_Footer {
         ?>
         <div>
             <img id="mm-csi-image-container" src="<?php _e(esc_attr($val)) ?>" alt="background" width="100%" height="200px" style="border: solid black 1px">
-            <input type="text" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name . "[" . self::$bg_img . "]") ?>" id=<?php _e(self::$bg_img) ?>>
+            <input type="hidden" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name . "[" . self::$bg_img . "]") ?>" id=<?php _e(self::$bg_img) ?>>
             <button id="mm-csi-btn-upload" class="button-primary"><?php _e(__("Kép cseréje")) ?></button>
         </div>
         <?php
@@ -149,14 +161,14 @@ class Custom_Footer {
     /**
      * Ez a margó beállításához szükséges input mezők kirajzolása
      */
-    public function change_margin() {
-        $margin =  self::getSettingOrDefault(self::$img_margin);
+    public function change_margin($setting) {
+        $margin =  self::getSettingOrDefault($setting);
 
         ?>
         <div class="mm-csi-main-container">
             <span class="mm-csi-options-container">
                 <?php foreach ($margin->values as $dir => $val) {
-                    $dir_id = self::$img_margin . "-" . $dir;
+                    $dir_id = $setting . "-" . $dir;
                     ?>
                     <div class="mm-csi-input-group">
                         <label for=<?php _e($dir_id) ?>><?php _e(ucfirst($dir)) ?></label>
@@ -167,7 +179,7 @@ class Custom_Footer {
                 ?>
             </span>
             <span>
-                <?php $unit_id = self::$img_margin . "-unit"; ?>
+                <?php $unit_id = $setting . "-unit"; ?>
                 <label for="<?php _e($unit_id) ?>">Units</label>
                 <select name=<?php _e(self::$option_name . "[" . $unit_id . "]")?> id="<?php _e($unit_id) ?>">
                     <?php foreach (Margin::$unit_types as $i => $type) {
@@ -186,13 +198,15 @@ class Custom_Footer {
     public function sanitize_footer_settings($opts) {
         $clean_opts = array_map("sanitize_text_field", $opts);
         $clean_opts[self::$bg_img] = $opts[self::$bg_img];
-        $clean_opts[self::$img_margin] = new Margin(
-            $opts[self::$img_margin . "-top"],
-            $opts[self::$img_margin . "-right"],
-            $opts[self::$img_margin . "-bottom"],
-            $opts[self::$img_margin . "-left"],
-            $opts[self::$img_margin . "-unit"]
-        );
+        foreach ([self::$img_margin, self::$txt_margin] as $i => $margin_key) {
+            $clean_opts[$margin_key] = new Margin(
+                $opts[$margin_key . "-top"],
+                $opts[$margin_key . "-right"],
+                $opts[$margin_key . "-bottom"],
+                $opts[$margin_key . "-left"],
+                $opts[$margin_key . "-unit"]
+            );
+        }
 
         return $clean_opts;
     }

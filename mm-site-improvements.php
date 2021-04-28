@@ -5,7 +5,7 @@
  * Description: HEGY-hez készített külön bővítmény. A Wordpress oldalon egyéni tartalmakat lehet hozzátenni marketing szempontból.
  * Author: Mihalovits Márk
  * Author URI: https://github.com/Sealdolphin
- * Version: 1.0
+ * Version: 1.1
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
