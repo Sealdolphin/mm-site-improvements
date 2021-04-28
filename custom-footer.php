@@ -95,16 +95,16 @@ class Custom_Footer {
         $section_id = Custom_Site_Improvements_Plugin::$prefix . "footer_properties";
         add_settings_section(
             $section_id,
-            "Footer Properties",
+            __("Lábléc beállításai"),
             function() {
-                printf("<p>%s</p>", __("Set the footer properties"));
+                printf("<p>%s</p>", __("Itt állíthatod be a lábléc beállításait"));
             },
             Custom_Site_Improvements_Plugin::$settings_page
         );
         //Lábléc beállítás: háttérkép
         add_settings_field(
             self::$bg_img,
-            "Set Background image",
+            __("Háttérkép"),
             array($this, "upload_image"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
@@ -112,7 +112,7 @@ class Custom_Footer {
         //Lábléc beállítás: kép margó
         add_settings_field(
             self::$img_margin,
-            "Set Margin",
+            __("Kép margója"),
             array($this, "change_margin"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id,
@@ -121,7 +121,7 @@ class Custom_Footer {
         //Lábléc beállítás: aláírás (flavor text)
         add_settings_field(
             self::$flavor_text,
-            "Set Flavor Text",
+            __("Lábléc Felirat"),
             array($this, "change_text"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
@@ -129,7 +129,7 @@ class Custom_Footer {
         //Lábléc beállítás: szöveg elrendezés
         add_settings_field(
             self::$txt_align,
-            "Set txt align",
+            __("Szöveg elrendezése"),
             array($this, "text_alignment"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
@@ -137,7 +137,7 @@ class Custom_Footer {
         //Lábléc beállítás: szöveg margó
         add_settings_field(
             self::$txt_margin,
-            "Set txt Margin",
+            __("Szöveg margója"),
             array($this, "change_margin"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id,
