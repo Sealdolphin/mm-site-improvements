@@ -20,6 +20,7 @@ class Custom_Footer {
     private static $flavor_text = "FLAVOR_TEXT";
     private static $img_margin = "IMG_MARGIN";
     private static $txt_margin = "TXT_MARGIN";
+    private static $txt_align = "TXT_ALIGN";
     /**
      * Az alapbeállítás értéke
      */
@@ -32,6 +33,7 @@ class Custom_Footer {
             self::$default_settings = array(
                 self::$bg_img => plugin_dir_url(__FILE__) . "assets/media/hegyek-honlap.png",
                 self::$flavor_text => "",
+                self::$txt_align => "right",
                 self::$img_margin => new Margin(-15, 0, 0, 0, Margin::PERCENTAGE),
                 self::$txt_margin => new Margin(0, 0, 0, 0, Margin::PIXELS)
             );
@@ -76,11 +78,12 @@ class Custom_Footer {
         $img_path = $opts[self::$bg_img];
         $margin = $opts[self::$img_margin];
         $txt_margin = $opts[self::$txt_margin];
+        $align = $opts[self::$txt_align];
 
         ?>
         <div>
             <img src=<?php _e($img_path) ?> alt="hegyek" style="<?php _e($margin->get_margin_css()); ?>"/>
-            <p style="text-align:right; <?php _e($txt_margin->get_margin_css()); ?>"><?php _e(esc_attr($opts[self::$flavor_text])) ?></p>
+            <p style="text-align:<?php _e($align); ?>; <?php _e($txt_margin->get_margin_css()); ?>"><?php _e(esc_attr($opts[self::$flavor_text])) ?></p>
         </div>
         <?php
     }
@@ -123,7 +126,15 @@ class Custom_Footer {
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
         );
-        //Lábléc beállítás: margó
+        //Lábléc beállítás: szöveg elrendezés
+        add_settings_field(
+            self::$txt_align,
+            "Set txt align",
+            array($this, "text_alignment"),
+            Custom_Site_Improvements_Plugin::$settings_page,
+            $section_id
+        );
+        //Lábléc beállítás: szöveg margó
         add_settings_field(
             self::$txt_margin,
             "Set txt Margin",
@@ -193,6 +204,34 @@ class Custom_Footer {
         </div>
         <?php
     }
+
+    /**
+     * Ez a szöveg elrendezéshez beállításához szükséges input mezők kirajzolása
+     */
+    public function text_alignment()
+    {
+        $align = self::getSettingOrDefault(self::$txt_align);
+        $alignments = array(
+            "left" => __("Balra"),
+            "center" => __("Középre"),
+            "right" => __("Jobbra")
+        );
+        ?>
+        <div>
+            <?php foreach ($alignments as $id => $label) { ?>
+                <input 
+                    type="radio" 
+                    name="<?php _e(self::$option_name . "[" . self::$txt_align . "]")?>" 
+                    id="<?php _e($id) ?>" 
+                    value="<?php _e($id) ?>"
+                    <?php if($id == $align) {_e("checked"); } ?>
+                >
+                <label for="<?php _e($id) ?>"><?php _e($label) ?></label>
+            <?php } ?>
+        </div>
+        <?php
+    }
+
     /**
      * A lábléchez tartozó beállítások szanitációja (tisztítása)
      */
