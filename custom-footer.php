@@ -14,6 +14,14 @@ class Custom_Footer {
      */
     public static $option_name = "mmsi_footer_options";
     /**
+     * Egyes beállítások
+     */
+    private static $bg_img = "BG_IMG";
+    private static $flavor_text = "FLAVOR_TEXT";
+    private static $img_margin = "IMG_MARGIN";
+    private static $txt_margin = "TXT_MARGIN";
+    private static $txt_align = "TXT_ALIGN";
+    /**
      * Az alapbeállítás értéke
      */
     private static $default_settings = null;
@@ -23,9 +31,11 @@ class Custom_Footer {
     public static function default_settings() {
         if(self::$default_settings == null) {
             self::$default_settings = array(
-                'background_image' => plugin_dir_url(__FILE__) . "assets/media/hegyek-honlap.png",
-                'flavor_text' => "Some flavor text",
-                'margin' => new Margin(-15, 0, 0, 0, Margin::PERCENTAGE)
+                self::$bg_img => plugin_dir_url(__FILE__) . "assets/media/hegyek-honlap.png",
+                self::$flavor_text => "",
+                self::$txt_align => "right",
+                self::$img_margin => new Margin(-15, 0, 0, 0, Margin::PERCENTAGE),
+                self::$txt_margin => new Margin(0, 0, 0, 0, Margin::PIXELS)
             );
         }
         return self::$default_settings;
@@ -58,20 +68,22 @@ class Custom_Footer {
         wp_enqueue_style('mm-site-margin-selector');
         //A kép beállításhoz szükséges JS szkript betöltése
         wp_enqueue_media();
-        wp_enqueue_script('mm-site-image-uploader', plugin_dir_url(__FILE__) . "scripts/js/image_upload.js");
+        wp_enqueue_script('mm-site-image-uploader',plugin_dir_url(__FILE__) . "scripts/js/image_upload.js", array(), Custom_Site_Improvements_Plugin::get_version());
     }
     /**
      * Ez a függvény rajzolja ki a láblécet a beállítások alapján
      */
     function apply_customisation() {
         $opts = get_option( self::$option_name );
-        $img_path = $opts["background_image"];
-        $margin = $opts["margin"];
+        $img_path = $opts[self::$bg_img];
+        $margin = $opts[self::$img_margin];
+        $txt_margin = $opts[self::$txt_margin];
+        $align = $opts[self::$txt_align];
 
         ?>
         <div>
-            <img src=<?php _e($img_path) ?> alt="hegyek" style="<?php _e($margin->get_margin_css()) ?>"/>
-            <p style="text-align:right"><?php _e(esc_attr($opts["flavor_text"])) ?></p>
+            <img src=<?php _e($img_path) ?> alt="hegyek" style="<?php _e($margin->get_margin_css()); ?>"/>
+            <p style="text-align:<?php _e($align); ?>; <?php _e($txt_margin->get_margin_css()); ?>"><?php _e(esc_attr($opts[self::$flavor_text])) ?></p>
         </div>
         <?php
     }
@@ -83,48 +95,66 @@ class Custom_Footer {
         $section_id = Custom_Site_Improvements_Plugin::$prefix . "footer_properties";
         add_settings_section(
             $section_id,
-            "Footer Properties",
+            __("Lábléc beállításai"),
             function() {
-                printf("<p>%s</p>", __("Set the footer properties"));
+                printf("<p>%s</p>", __("Itt állíthatod be a lábléc beállításait"));
             },
             Custom_Site_Improvements_Plugin::$settings_page
         );
         //Lábléc beállítás: háttérkép
         add_settings_field(
-            "background_image",
-            "Set Background image",
+            self::$bg_img,
+            __("Háttérkép"),
             array($this, "upload_image"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
         );
+        //Lábléc beállítás: kép margó
+        add_settings_field(
+            self::$img_margin,
+            __("Kép margója"),
+            array($this, "change_margin"),
+            Custom_Site_Improvements_Plugin::$settings_page,
+            $section_id,
+            self::$img_margin
+        );
         //Lábléc beállítás: aláírás (flavor text)
         add_settings_field(
-            "flavor_text",
-            "Set Flavor Text",
+            self::$flavor_text,
+            __("Lábléc Felirat"),
             array($this, "change_text"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
         );
-        //Lábléc beállítás: margó
+        //Lábléc beállítás: szöveg elrendezés
         add_settings_field(
-            "footer_margin",
-            "Set Margin",
-            array($this, "change_margin"),
+            self::$txt_align,
+            __("Szöveg elrendezése"),
+            array($this, "text_alignment"),
             Custom_Site_Improvements_Plugin::$settings_page,
             $section_id
+        );
+        //Lábléc beállítás: szöveg margó
+        add_settings_field(
+            self::$txt_margin,
+            __("Szöveg margója"),
+            array($this, "change_margin"),
+            Custom_Site_Improvements_Plugin::$settings_page,
+            $section_id,
+            self::$txt_margin
         );
     }
     /**
      * Ez a háttérkép beállításához szükséges input mezők kirajzolása
      */
     public function upload_image() {
-        $val = self::getSettingOrDefault("background_image");
+        $val = self::getSettingOrDefault(self::$bg_img);
         
         ?>
         <div>
             <img id="mm-csi-image-container" src="<?php _e(esc_attr($val)) ?>" alt="background" width="100%" height="200px" style="border: solid black 1px">
-            <input type="hidden" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name) ?>[background_image]" id="background_image">
-            <button id="mm-csi-btn-upload" class="button-primary"><?php _e("Change Picture") ?></button>
+            <input type="hidden" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name . "[" . self::$bg_img . "]") ?>" id=<?php _e(self::$bg_img) ?>>
+            <button id="mm-csi-btn-upload" class="button-primary"><?php _e(__("Kép cseréje")) ?></button>
         </div>
         <?php
     }
@@ -132,36 +162,38 @@ class Custom_Footer {
      * Ez az aláírás beállításához szükséges input mezők kirajzolása
      */
     public function change_text() {
-        $val = self::getSettingOrDefault("flavor_text");
+        $val = self::getSettingOrDefault(self::$flavor_text);
 
         ?>
         <div>
-        <input type="text" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name) ?>[flavor_text]">
+        <input type="text" class="widefat" value="<?php _e(esc_attr($val)) ?>" name="<?php _e(self::$option_name . "[" . self::$flavor_text . "]") ?>">
         </div>
         <?php
     }
     /**
      * Ez a margó beállításához szükséges input mezők kirajzolása
      */
-    public function change_margin() {
-        $margin =  self::getSettingOrDefault("margin");
+    public function change_margin($setting) {
+        $margin =  self::getSettingOrDefault($setting);
 
         ?>
         <div class="mm-csi-main-container">
             <span class="mm-csi-options-container">
                 <?php foreach ($margin->values as $dir => $val) {
+                    $dir_id = $setting . "-" . $dir;
                     ?>
                     <div class="mm-csi-input-group">
-                        <label for=<?php _e("margin-" . $dir) ?>><?php _e(ucfirst($dir)) ?></label>
-                        <input type="number" value=<?php _e(esc_attr($val)) ?> name=<?php _e(self::$option_name . "[margin-" . $dir . "]") ?> id=<?php _e("margin-" . $dir) ?>>
+                        <label for=<?php _e($dir_id) ?>><?php _e(ucfirst($dir)) ?></label>
+                        <input type="number" value=<?php _e(esc_attr($val)) ?> name=<?php _e(self::$option_name . "[" . $dir_id . "]") ?> id=<?php _e($dir_id) ?>>
                     </div>
                     <?php
                 }
                 ?>
             </span>
             <span>
-                <label for="margin-unit">Units</label>
-                <select name="<?php _e(self::$option_name) ?>[margin-unit]" id="margin-unit">
+                <?php $unit_id = $setting . "-unit"; ?>
+                <label for="<?php _e($unit_id) ?>">Units</label>
+                <select name=<?php _e(self::$option_name . "[" . $unit_id . "]")?> id="<?php _e($unit_id) ?>">
                     <?php foreach (Margin::$unit_types as $i => $type) {
                         ?>
                         <option value="<?php _e($i) ?>" <?php if($margin->unit == $type) {_e("selected"); } ?>><?php _e($type) ?></option>
@@ -172,23 +204,49 @@ class Custom_Footer {
         </div>
         <?php
     }
+
+    /**
+     * Ez a szöveg elrendezéshez beállításához szükséges input mezők kirajzolása
+     */
+    public function text_alignment()
+    {
+        $align = self::getSettingOrDefault(self::$txt_align);
+        $alignments = array(
+            "left" => __("Balra"),
+            "center" => __("Középre"),
+            "right" => __("Jobbra")
+        );
+        ?>
+        <div>
+            <?php foreach ($alignments as $id => $label) { ?>
+                <input 
+                    type="radio" 
+                    name="<?php _e(self::$option_name . "[" . self::$txt_align . "]")?>" 
+                    id="<?php _e($id) ?>" 
+                    value="<?php _e($id) ?>"
+                    <?php if($id == $align) {_e("checked"); } ?>
+                >
+                <label for="<?php _e($id) ?>"><?php _e($label) ?></label>
+            <?php } ?>
+        </div>
+        <?php
+    }
+
     /**
      * A lábléchez tartozó beállítások szanitációja (tisztítása)
      */
     public function sanitize_footer_settings($opts) {
-        $clean_opts = array(
-            'background_image' => $opts["background_image"],
-            'flavor_text' => sanitize_text_field($opts["flavor_text"]),
-            'margin' => Margin::sanitize(
-                new Margin(
-                    intval($opts["margin-top"]),
-                    intval($opts["margin-right"]),
-                    intval($opts["margin-bottom"]),
-                    intval($opts["margin-left"]),
-                    intval($opts["margin-unit"])
-                )
-            )
-        );
+        $clean_opts = array_map("sanitize_text_field", $opts);
+        $clean_opts[self::$bg_img] = $opts[self::$bg_img];
+        foreach ([self::$img_margin, self::$txt_margin] as $i => $margin_key) {
+            $clean_opts[$margin_key] = new Margin(
+                $opts[$margin_key . "-top"],
+                $opts[$margin_key . "-right"],
+                $opts[$margin_key . "-bottom"],
+                $opts[$margin_key . "-left"],
+                $opts[$margin_key . "-unit"]
+            );
+        }
 
         return $clean_opts;
     }
@@ -234,17 +292,6 @@ class Margin {
             $css = $css . ' margin-' . $dir . ': ' . $val . $this->unit . ';';
         }
         return $css;
-    }
-
-    /**
-     * A margó értékeit tisztítja (DEPRECATED)
-     */
-    public static function sanitize(Margin $margin) {
-        array_map(function($val) {
-            $val = intval($val);
-        }, $margin->values);
-
-        return $margin;
     }
 
 }

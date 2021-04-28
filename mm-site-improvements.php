@@ -5,7 +5,7 @@
  * Description: HEGY-hez készített külön bővítmény. A Wordpress oldalon egyéni tartalmakat lehet hozzátenni marketing szempontból.
  * Author: Mihalovits Márk
  * Author URI: https://github.com/Sealdolphin
- * Version: 1.0
+ * Version: 1.1
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -23,6 +23,12 @@ class Custom_Site_Improvements_Plugin {
      * A Plugin osztály példánya
      */
     private static $instance;
+    /**
+     * 
+     */
+    public static function get_version() {
+        return get_plugin_data(__FILE__)['Version'];
+    }
     /**
      * Plugin prefix
      */
@@ -72,7 +78,7 @@ class Custom_Site_Improvements_Plugin {
         add_theme_page(
             "Custom Improvements Options",
             "Custom Items Improvements Settings",
-            "manage_options",
+            "edit_themes",
             self::$settings_page,
             array( $this, 'create_options_page' )
         );
