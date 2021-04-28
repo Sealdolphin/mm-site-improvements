@@ -72,7 +72,7 @@ class Custom_Site_Improvements_Plugin {
         add_theme_page(
             "Custom Improvements Options",
             "Custom Items Improvements Settings",
-            "manage_options",
+            "edit_themes",
             self::$settings_page,
             array( $this, 'create_options_page' )
         );
