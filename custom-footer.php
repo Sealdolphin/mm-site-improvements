@@ -75,11 +75,12 @@ class Custom_Footer {
         $opts = get_option( self::$option_name );
         $img_path = $opts[self::$bg_img];
         $margin = $opts[self::$img_margin];
+        $txt_margin = $opts[self::$txt_margin];
 
         ?>
         <div>
-            <img src=<?php _e($img_path) ?> alt="hegyek" style="<?php _e($margin->get_margin_css()) ?>"/>
-            <p style="text-align:right"><?php _e(esc_attr($opts[self::$flavor_text])) ?></p>
+            <img src=<?php _e($img_path) ?> alt="hegyek" style="<?php _e($margin->get_margin_css()); ?>"/>
+            <p style="text-align:right; <?php _e($txt_margin->get_margin_css()); ?>"><?php _e(esc_attr($opts[self::$flavor_text])) ?></p>
         </div>
         <?php
     }
