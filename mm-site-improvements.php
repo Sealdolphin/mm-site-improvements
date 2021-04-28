@@ -24,6 +24,12 @@ class Custom_Site_Improvements_Plugin {
      */
     private static $instance;
     /**
+     * 
+     */
+    public static function get_version() {
+        return get_plugin_data(__FILE__)['Version'];
+    }
+    /**
      * Plugin prefix
      */
     public static $prefix = "mm_site_impr_";

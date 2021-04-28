@@ -64,7 +64,7 @@ class Custom_Footer {
         wp_enqueue_style('mm-site-margin-selector');
         //A kép beállításhoz szükséges JS szkript betöltése
         wp_enqueue_media();
-        wp_enqueue_script('mm-site-image-uploader', plugin_dir_url(__FILE__) . "scripts/js/image_upload.js");
+        wp_enqueue_script('mm-site-image-uploader',plugin_dir_url(__FILE__) . "scripts/js/image_upload.js", array(), Custom_Site_Improvements_Plugin::get_version());
     }
     /**
      * Ez a függvény rajzolja ki a láblécet a beállítások alapján
