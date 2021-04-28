@@ -156,18 +156,20 @@ class Custom_Footer {
         <div class="mm-csi-main-container">
             <span class="mm-csi-options-container">
                 <?php foreach ($margin->values as $dir => $val) {
+                    $dir_id = self::$img_margin . "-" . $dir;
                     ?>
                     <div class="mm-csi-input-group">
-                        <label for=<?php _e("margin-" . $dir) ?>><?php _e(ucfirst($dir)) ?></label>
-                        <input type="number" value=<?php _e(esc_attr($val)) ?> name=<?php _e(self::$option_name . "[margin-" . $dir . "]") ?> id=<?php _e("margin-" . $dir) ?>>
+                        <label for=<?php _e($dir_id) ?>><?php _e(ucfirst($dir)) ?></label>
+                        <input type="number" value=<?php _e(esc_attr($val)) ?> name=<?php _e(self::$option_name . "[" . $dir_id . "]") ?> id=<?php _e($dir_id) ?>>
                     </div>
                     <?php
                 }
                 ?>
             </span>
             <span>
-                <label for="margin-unit">Units</label>
-                <select name="<?php _e(self::$option_name) ?>[margin-unit]" id="margin-unit">
+                <?php $unit_id = self::$img_margin . "-unit"; ?>
+                <label for="<?php _e($unit_id) ?>">Units</label>
+                <select name=<?php _e(self::$option_name . "[" . $unit_id . "]")?> id="<?php _e($unit_id) ?>">
                     <?php foreach (Margin::$unit_types as $i => $type) {
                         ?>
                         <option value="<?php _e($i) ?>" <?php if($margin->unit == $type) {_e("selected"); } ?>><?php _e($type) ?></option>
@@ -184,18 +186,13 @@ class Custom_Footer {
     public function sanitize_footer_settings($opts) {
         $clean_opts = array_map("sanitize_text_field", $opts);
         $clean_opts[self::$bg_img] = $opts[self::$bg_img];
-            // self::$bg_img => $opts[self::$bg_img],
-            // self::$flavor_text => sanitize_text_field($opts[self::$flavor_text]),
-            // self::$img_margin => Margin::sanitize(
-            //     new Margin(
-            //         intval($opts["margin-top"]),
-            //         intval($opts["margin-right"]),
-            //         intval($opts["margin-bottom"]),
-            //         intval($opts["margin-left"]),
-            //         intval($opts["margin-unit"])
-            //     )
-            // )
-        
+        $clean_opts[self::$img_margin] = new Margin(
+            $opts[self::$img_margin . "-top"],
+            $opts[self::$img_margin . "-right"],
+            $opts[self::$img_margin . "-bottom"],
+            $opts[self::$img_margin . "-left"],
+            $opts[self::$img_margin . "-unit"]
+        );
 
         return $clean_opts;
     }
@@ -241,17 +238,6 @@ class Margin {
             $css = $css . ' margin-' . $dir . ': ' . $val . $this->unit . ';';
         }
         return $css;
-    }
-
-    /**
-     * A margó értékeit tisztítja (DEPRECATED)
-     */
-    public static function sanitize(Margin $margin) {
-        array_map(function($val) {
-            $val = intval($val);
-        }, $margin->values);
-
-        return $margin;
     }
 
 }
