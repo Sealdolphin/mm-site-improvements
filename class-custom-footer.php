@@ -189,7 +189,7 @@ class Custom_Footer {
 		?>
 		<div>
 			<img id='mm-csi-image-container' src='<?php echo esc_html( esc_attr( $val ) ); ?>' alt='background' width='100%' height='200px' style='border: solid black 1px'>
-			<input type='hidden' class='widefat' value='<?php echo esc_html( esc_attr( $val ) ); ?>' name='<?php echo esc_html( self::$option_name . '[ ' . self::$bg_img . ' ]' ); ?>' id=<?php echo esc_html( self::$bg_img ); ?>>
+			<input type='hidden' class='widefat' value='<?php echo esc_html( esc_attr( $val ) ); ?>' name='<?php echo esc_html( self::$option_name . '[' . self::$bg_img . ']' ); ?>' id=<?php echo esc_html( self::$bg_img ); ?>>
 			<button id='mm-csi-btn-upload' class='button-primary'><?php echo esc_html( __( 'Kép cseréje' ) ); ?></button>
 		</div>
 		<?php
@@ -203,7 +203,7 @@ class Custom_Footer {
 
 		?>
 			<div>
-				<input type='text' class='widefat' value='<?php echo esc_html( esc_attr( $val ) ); ?>' name='<?php echo esc_html( self::$option_name . '[ ' . self::$flavor_text . ' ]' ); ?>'>
+				<input type='text' class='widefat' value='<?php echo esc_html( esc_attr( $val ) ); ?>' name='<?php echo esc_html( self::$option_name . '[' . self::$flavor_text . ']' ); ?>'>
 			</div>
 		<?php
 	}
@@ -225,7 +225,7 @@ class Custom_Footer {
 					?>
 					<div class='mm-csi-input-group'>
 						<label for=<?php echo esc_html( $dir_id ); ?>><?php echo esc_html( ucfirst( $dir ) ); ?></label>
-						<input type='number' value=<?php echo esc_html( esc_attr( $val ) ); ?> name=<?php echo esc_html( self::$option_name . '[ ' . $dir_id . ' ]' ); ?> id=<?php echo esc_html( $dir_id ); ?>>
+						<input type='number' value=<?php echo esc_html( esc_attr( $val ) ); ?> name="<?php echo esc_html( self::$option_name . '[' . $dir_id . ']' ); ?>" id="<?php echo esc_html( $dir_id ); ?>">
 					</div>
 					<?php
 				}
@@ -233,18 +233,18 @@ class Custom_Footer {
 			</span>
 			<span>
 				<?php $unit_id = $setting . '-unit'; ?>
-				<label for='<?php echo esc_html( $unit_id ); ?>'>Units</label>
-				<select name=<?php echo esc_html( self::$option_name . '[ ' . $unit_id . ' ]' ); ?> id='<?php echo esc_html( $unit_id ); ?>'>
+				<label for="<?php echo esc_html( $unit_id ); ?>">Units</label>
+				<select name="<?php echo esc_html( self::$option_name . '[' . $unit_id . ']' ); ?>" id="<?php echo esc_html( $unit_id ); ?>">
 					<?php
-					foreach ( Margin::$unit_types as $i => $type ) {
+					foreach ( Margin::$unit_types as $i => $unit_type ) {
 						?>
-						<option value='<?php echo esc_html( $i ); ?>'
+						<option value="<?php echo esc_html( $i ); ?>"
 							<?php
-							if ( $margin->unit === $type ) {
+							if ( $margin->unit === $unit_type ) {
 								echo esc_html( 'selected' );
 							}
 							?>
-						><?php echo esc_html( $type ); ?></option>
+						><?php echo esc_html( $unit_type ); ?></option>
 						<?php
 					}
 					?>
@@ -269,16 +269,16 @@ class Custom_Footer {
 			<?php foreach ( $alignments as $id => $label ) { ?>
 				<input 
 					type='radio' 
-					name='<?php echo esc_html( self::$option_name . '[ ' . self::$txt_align . ' ]' ); ?>' 
-					id='<?php echo esc_html( $id ); ?>' 
-					value='<?php echo esc_html( $id ); ?>'
+					name="<?php echo esc_html( self::$option_name . '[' . self::$txt_align . ']' ); ?>" 
+					id="<?php echo esc_html( $id ); ?>" 
+					value="<?php echo esc_html( $id ); ?>"
 					<?php
 					if ( $id === $align ) {
 						echo esc_html( 'checked' );
 					}
 					?>
 				>
-				<label for='<?php echo esc_html( $id ); ?>'><?php echo esc_html( $label ); ?></label>
+				<label for="<?php echo esc_html( $id ); ?>"><?php echo esc_html( $label ); ?></label>
 			<?php }; ?>
 		</div>
 		<?php

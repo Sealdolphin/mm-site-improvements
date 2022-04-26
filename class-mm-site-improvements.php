@@ -11,7 +11,7 @@
  * Description: HEGY-hez készített külön bővítmény. A WordPress oldalon egyéni tartalmakat lehet hozzátenni marketing szempontból.
  * Author: Mihalovits Márk
  * Author URI: https://github.com/Sealdolphin
- * Version: 1.2
+ * Version: 1.3
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -132,12 +132,24 @@ class MM_Site_Improvements {
 
 		$page_title = __( 'Customize Site Improvements' );
 		$header     = <<<EOD
-		<div class=wrap>
+		<div class="wrap">
 			<h1>$page_title</h1>
 			<form method='post' action='options.php'>
 		EOD;
 
-		echo esc_html( $header );
+		print wp_kses(
+			$header,
+			array(
+				'div'  => array(
+					'class' => 'wrap',
+				),
+				'h1'   => array(),
+				'form' => array(
+					'method' => 'post',
+					'action' => 'options.php',
+				),
+			)
+		);
 
 		settings_fields( self::$option_group );
 		do_settings_sections( self::$settings_page );

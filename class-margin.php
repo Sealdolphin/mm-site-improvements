@@ -48,7 +48,7 @@ class Margin {
 	 * A kirajzoláshoz szükséges CSS-t adja vissza a beállított értékek alapján
 	 */
 	public function get_margin_css() {
-		$css = '';
+		$css = 'width:100%;';
 		foreach ( $this->values as $dir => $val ) {
 			$css = $css . ' margin-' . $dir . ': ' . $val . $this->unit . ';';
 		}
